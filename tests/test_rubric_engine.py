@@ -105,7 +105,7 @@ def test_invalid_input_source_raises_validation_error():
         "topic": "algebra",
         "subskill": "linear",
         "confirmed_by_student": True,
-        "input_source": "manual_ocr",
+        "input_source": "invalid_source",
     }
     with pytest.raises(ValueError, match="input_source"):
         mark_solution(data, expected_answer="x=4")

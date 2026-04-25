@@ -234,7 +234,11 @@ def mark_solution(
     lost_marks = max_score - total_score
     percentage = round((total_score / max_score) * 100, 2) if max_score else 0.0
 
-    all_errors = sorted({e for c in criterion_results for e in c.error_types if e in ERROR_DNA_CATEGORIES})
+    all_errors_raw = {e for c in criterion_results for e in c.error_types}
+    unknown_error_types = sorted(e for e in all_errors_raw if e not in ERROR_DNA_CATEGORIES)
+    if unknown_error_types:
+        raise ValueError(f"Unsupported error types generated: {', '.join(unknown_error_types)}")
+    all_errors = sorted(all_errors_raw)
     evidence_strength = total_score / max_score if max_score else 0.0
     confidence_result = assess_confidence(
         solution_text=text,
