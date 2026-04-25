@@ -11,6 +11,14 @@ from sympy.parsing.sympy_parser import (
 _TRANSFORMATIONS = standard_transformations + (implicit_multiplication_application, convert_xor)
 
 
+def _to_comparable_expression(raw: str) -> str:
+    expr = (raw or "").strip()
+    if "=" in expr:
+        left, right = expr.split("=", 1)
+        return f"({left.strip()})-({right.strip()})"
+    return expr
+
+
 def validate_final_answer(student_answer: str, expected_answer: str) -> Dict[str, object]:
     student_expression = (student_answer or "").strip()
     expected_expression = (expected_answer or "").strip()
@@ -30,8 +38,16 @@ def validate_final_answer(student_answer: str, expected_answer: str) -> Dict[str
         return result
 
     try:
-        student_expr = parse_expr(student_expression, transformations=_TRANSFORMATIONS, evaluate=True)
-        expected_expr = parse_expr(expected_expression, transformations=_TRANSFORMATIONS, evaluate=True)
+        student_expr = parse_expr(
+            _to_comparable_expression(student_expression),
+            transformations=_TRANSFORMATIONS,
+            evaluate=True,
+        )
+        expected_expr = parse_expr(
+            _to_comparable_expression(expected_expression),
+            transformations=_TRANSFORMATIONS,
+            evaluate=True,
+        )
     except Exception:
         result.update(
             {
