@@ -37,6 +37,15 @@ JSON-serializable dictionary with:
 - rewrite_guidance
 - confidence (`high|medium|low`)
 - teacher_review_needed (bool)
+- symbolic_validation (object | null, present when expected_answer is provided):
+  - status (`equivalent|not_equivalent|parse_error|not_applicable`)
+  - student_expression
+  - expected_expression
+  - normalized_student_expression
+  - normalized_expected_expression
+  - confidence_impact (`increase|decrease|neutral`)
+  - teacher_review_recommended (bool)
+  - reason
 
 ### `teacher_review_needed` trigger logic (v0.2)
 `teacher_review_needed` is true if any of these hold:
@@ -45,6 +54,11 @@ JSON-serializable dictionary with:
 - solution is too short
 - unclear working is detected
 - expected_answer is missing and correctness cannot be verified
+
+### Symbolic validation helper scope (v0.3)
+- SymPy is used only as a helper to check final-answer mathematical equivalence when possible.
+- The rubric engine remains the source of truth for grading decisions.
+- SymPy output does not grade reasoning, method quality, notation quality, or missing steps.
 
 ## Input contract for `update_error_dna`
 - student_id: str
