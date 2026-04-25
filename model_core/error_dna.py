@@ -38,6 +38,8 @@ def update_error_dna(
 
     total_lost = float(marking_result.get("lost_marks", 0) or 0)
     max_score = float(marking_result.get("max_score", 1) or 1)
+    # Base multiplier starts at 1.0 so every detected error contributes at least
+    # its category weight, then scales up with mark loss severity.
     severity_multiplier = 1.0 + (total_lost / max_score)
 
     for err in marking_result.get("error_types", []):

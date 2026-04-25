@@ -21,6 +21,8 @@ def _extract_final_answer(text: str) -> str:
         m = re.search(p, lowered)
         if m:
             return m.group(1).strip().strip(".")
+    # Intentional fallback: use the last non-empty line as probable final answer
+    # when explicit markers like "final answer:" are absent.
     lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
     return lines[-1].lower().strip(".") if lines else ""
 

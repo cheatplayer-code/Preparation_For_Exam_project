@@ -12,7 +12,13 @@ def generate_7_day_plan(error_dna_profile: Dict[str, object]) -> Dict[str, objec
     normalized = {cat: float(weaknesses.get(cat, 0.0)) for cat in ERROR_DNA_CATEGORIES}
     ranked = sorted(normalized.items(), key=lambda kv: kv[1], reverse=True)
 
-    top_focus = [cat for cat, score in ranked if score > 0][:3] or DEFAULT_FOCUS_CATEGORIES
+    top_focus = [cat for cat, score in ranked if score > 0][:3]
+    if len(top_focus) < 3:
+        for default_cat in DEFAULT_FOCUS_CATEGORIES:
+            if default_cat not in top_focus:
+                top_focus.append(default_cat)
+            if len(top_focus) == 3:
+                break
 
     days: List[Dict[str, object]] = []
     for i in range(7):
