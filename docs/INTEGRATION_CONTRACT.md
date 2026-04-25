@@ -2,16 +2,16 @@
 
 ## Input contract for `mark_solution`
 Dictionary with:
-- solution_text: str
-- student_id: str
-- question_id: str
-- topic: str
-- subskill: str
-- confirmed_by_student: bool
-- input_source: str (`typed` or manually confirmed OCR text source)
+- solution_text: str (required, non-empty after trim)
+- student_id: str (required)
+- question_id: str (required)
+- topic: str (required, non-empty after trim)
+- subskill: str (required, non-empty after trim)
+- confirmed_by_student: bool (required, must be boolean)
+- input_source: str (required, one of: `typed`, `manual_edit`, `ocr_draft`)
 
 Optional parameter:
-- expected_answer: str
+- expected_answer: str | None
 
 ## Output contract from `mark_solution`
 JSON-serializable dictionary with:
@@ -23,14 +23,28 @@ JSON-serializable dictionary with:
   - lost_marks
   - error_types[]
   - feedback
-- total_score
-- max_score
+  - evidence_found[] (trace evidence supporting marks)
+  - evidence_missing[] (trace evidence for lost marks/uncertainty)
+  - decision_reason (criterion decision rationale)
+- awarded_marks (examiner-style alias of `total_score`)
+- total_marks (examiner-style alias of `max_score`)
+- percentage (float, rounded to 2 dp, `awarded_marks / total_marks * 100`)
+- total_score (backward-compatible)
+- max_score (backward-compatible)
 - lost_marks
 - error_types[]
 - feedback_summary
 - rewrite_guidance
 - confidence (`high|medium|low`)
 - teacher_review_needed (bool)
+
+### `teacher_review_needed` trigger logic (v0.2)
+`teacher_review_needed` is true if any of these hold:
+- confidence is low
+- solution is unconfirmed
+- solution is too short
+- unclear working is detected
+- expected_answer is missing and correctness cannot be verified
 
 ## Input contract for `update_error_dna`
 - student_id: str

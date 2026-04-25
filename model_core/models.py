@@ -2,6 +2,7 @@ from dataclasses import asdict, dataclass, field
 from typing import Dict, List
 
 MIN_SOLUTION_LENGTH = 20
+ALLOWED_INPUT_SOURCES = ["typed", "manual_edit", "ocr_draft"]
 
 
 ERROR_DNA_CATEGORIES = [
@@ -40,6 +41,9 @@ class CriterionResult:
     lost_marks: int
     error_types: List[str] = field(default_factory=list)
     feedback: str = ""
+    evidence_found: List[str] = field(default_factory=list)
+    evidence_missing: List[str] = field(default_factory=list)
+    decision_reason: str = ""
 
     def to_dict(self) -> Dict:
         return asdict(self)
@@ -52,6 +56,9 @@ class MarkingResult:
     topic: str
     subskill: str
     criterion_results: List[CriterionResult]
+    awarded_marks: int
+    total_marks: int
+    percentage: float
     total_score: int
     max_score: int
     lost_marks: int

@@ -1,3 +1,8 @@
+import json
+
+import pytest
+
+from model_core.models import ERROR_DNA_CATEGORIES
 from model_core.rubric_engine import mark_solution
 
 
@@ -70,7 +75,7 @@ def test_unconfirmed_solution_low_confidence():
         "topic": "algebra",
         "subskill": "linear",
         "confirmed_by_student": False,
-        "input_source": "manual_ocr",
+        "input_source": "manual_edit",
     }
     result = mark_solution(data, expected_answer="x=4")
     assert result["confidence"] == "low"
@@ -90,3 +95,114 @@ def test_unclear_solution_triggers_teacher_review_needed():
     result = mark_solution(data, expected_answer="x=4")
     assert "unclear_working" in result["error_types"]
     assert result["teacher_review_needed"] is True
+
+
+def test_invalid_input_source_raises_validation_error():
+    data = {
+        "solution_text": "I solve and therefore final answer: x = 4",
+        "student_id": "s7",
+        "question_id": "q7",
+        "topic": "algebra",
+        "subskill": "linear",
+        "confirmed_by_student": True,
+        "input_source": "manual_ocr",
+    }
+    with pytest.raises(ValueError, match="input_source"):
+        mark_solution(data, expected_answer="x=4")
+
+
+def test_empty_solution_raises_validation_error():
+    data = {
+        "solution_text": "   ",
+        "student_id": "s8",
+        "question_id": "q8",
+        "topic": "algebra",
+        "subskill": "linear",
+        "confirmed_by_student": True,
+        "input_source": "typed",
+    }
+    with pytest.raises(ValueError, match="solution_text"):
+        mark_solution(data, expected_answer="x=4")
+
+
+def test_all_error_types_are_from_allowed_taxonomy():
+    data = {
+        "solution_text": "idk ??? final answer: x = 5",
+        "student_id": "s9",
+        "question_id": "q9",
+        "topic": "algebra",
+        "subskill": "linear",
+        "confirmed_by_student": True,
+        "input_source": "typed",
+    }
+    result = mark_solution(data, expected_answer="x=4")
+    allowed = set(ERROR_DNA_CATEGORIES)
+    assert set(result["error_types"]).issubset(allowed)
+    for criterion in result["criterion_results"]:
+        assert set(criterion["error_types"]).issubset(allowed)
+
+
+def test_missing_expected_answer_triggers_teacher_review_or_low_confidence():
+    data = {
+        "solution_text": "I form the equation, simplify each side, and isolate x. therefore x = 4",
+        "student_id": "s10",
+        "question_id": "q10",
+        "topic": "algebra",
+        "subskill": "linear",
+        "confirmed_by_student": True,
+        "input_source": "typed",
+    }
+    result = mark_solution(data, expected_answer=None)
+    assert result["teacher_review_needed"] is True or result["confidence"] == "low"
+
+
+def test_criterion_trace_fields_are_present():
+    data = {
+        "solution_text": "I solve by equation and simplify because each step follows. final answer: x = 4",
+        "student_id": "s11",
+        "question_id": "q11",
+        "topic": "algebra",
+        "subskill": "linear",
+        "confirmed_by_student": True,
+        "input_source": "typed",
+    }
+    result = mark_solution(data, expected_answer="x=4")
+    for criterion in result["criterion_results"]:
+        assert "evidence_found" in criterion
+        assert "evidence_missing" in criterion
+        assert "decision_reason" in criterion
+        assert isinstance(criterion["evidence_found"], list)
+        assert isinstance(criterion["evidence_missing"], list)
+        assert isinstance(criterion["decision_reason"], str)
+
+
+def test_percentage_and_examiner_style_marks_fields():
+    data = {
+        "solution_text": "equation isolate x. final answer: x = 4",
+        "student_id": "s12",
+        "question_id": "q12",
+        "topic": "algebra",
+        "subskill": "linear",
+        "confirmed_by_student": True,
+        "input_source": "typed",
+    }
+    result = mark_solution(data, expected_answer="x=4")
+    assert result["awarded_marks"] == result["total_score"]
+    assert result["total_marks"] == result["max_score"]
+    expected_percentage = round((result["awarded_marks"] / result["total_marks"]) * 100, 2)
+    assert result["percentage"] == expected_percentage
+
+
+def test_output_is_json_serializable():
+    data = {
+        "solution_text": "I form equation and simplify because both sides are equal. final answer: x = 4",
+        "student_id": "s13",
+        "question_id": "q13",
+        "topic": "algebra",
+        "subskill": "linear",
+        "confirmed_by_student": True,
+        "input_source": "typed",
+    }
+    result = mark_solution(data, expected_answer="x=4")
+    encoded = json.dumps(result)
+    assert isinstance(encoded, str)
