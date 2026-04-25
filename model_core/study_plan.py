@@ -2,6 +2,8 @@ from typing import Dict, List
 
 from .models import ERROR_DNA_CATEGORIES
 
+DEFAULT_FOCUS_CATEGORIES = ["method_gap", "missing_reasoning", "time_management"]
+
 
 def generate_7_day_plan(error_dna_profile: Dict[str, object]) -> Dict[str, object]:
     student_id = error_dna_profile.get("student_id", "unknown_student")
@@ -10,7 +12,7 @@ def generate_7_day_plan(error_dna_profile: Dict[str, object]) -> Dict[str, objec
     normalized = {cat: float(weaknesses.get(cat, 0.0)) for cat in ERROR_DNA_CATEGORIES}
     ranked = sorted(normalized.items(), key=lambda kv: kv[1], reverse=True)
 
-    top_focus = [cat for cat, score in ranked if score > 0][:3] or ["method_gap", "missing_reasoning", "time_management"]
+    top_focus = [cat for cat, score in ranked if score > 0][:3] or DEFAULT_FOCUS_CATEGORIES
 
     days: List[Dict[str, object]] = []
     for i in range(7):

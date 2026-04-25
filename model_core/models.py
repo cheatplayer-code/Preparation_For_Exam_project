@@ -1,6 +1,8 @@
 from dataclasses import asdict, dataclass, field
 from typing import Dict, List
 
+MIN_SOLUTION_LENGTH = 20
+
 
 ERROR_DNA_CATEGORIES = [
     "concept_gap",

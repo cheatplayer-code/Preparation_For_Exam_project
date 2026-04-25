@@ -1,5 +1,7 @@
 from typing import Dict, List, Optional
 
+from .models import MIN_SOLUTION_LENGTH
+
 
 def assess_confidence(
     solution_text: str,
@@ -14,7 +16,7 @@ def assess_confidence(
     if not confirmed_by_student:
         reasons.append("solution_unconfirmed")
 
-    if len(text) < 20:
+    if len(text) < MIN_SOLUTION_LENGTH:
         reasons.append("too_short")
 
     unclear_tokens = ["???", "idk", "not sure", "unclear", "..."]

@@ -43,7 +43,8 @@ def test_wrong_final_answer_but_correct_method():
     }
     result = mark_solution(data, expected_answer="x=4")
     assert "incomplete_final_answer" in result["error_types"]
-    method = next(c for c in result["criterion_results"] if c["criterion"] == "method")
+    method = next((c for c in result["criterion_results"] if c["criterion"] == "method"), None)
+    assert method is not None
     assert method["awarded_score"] >= 2
 
 

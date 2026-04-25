@@ -2,7 +2,7 @@ import re
 from typing import Dict, Iterable, List, Optional, Union
 
 from .confidence import assess_confidence
-from .models import CriterionResult, MarkingResult, StudentSolutionInput
+from .models import CriterionResult, MarkingResult, MIN_SOLUTION_LENGTH, StudentSolutionInput
 
 
 def _normalize(s: str) -> str:
@@ -123,7 +123,7 @@ def mark_solution(
     clarity = 1
     clarity_errors: List[str] = []
     clarity_feedback = "Working is clear."
-    if unclear or len(text) < 20:
+    if unclear or len(text) < MIN_SOLUTION_LENGTH:
         clarity = 0
         clarity_errors.append("unclear_working")
         clarity_feedback = "Working is unclear or too brief to verify."
