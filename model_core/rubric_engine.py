@@ -10,6 +10,7 @@ from .models import (
     MIN_SOLUTION_LENGTH,
     StudentSolutionInput,
 )
+from .symbolic_validator import validate_final_answer
 
 
 def _normalize(s: str) -> str:
@@ -88,6 +89,7 @@ def mark_solution(
     )
 
     criterion_results: List[CriterionResult] = []
+    symbolic_validation = None
 
     correctness = 4
     correctness_errors: List[str] = []
@@ -115,14 +117,24 @@ def mark_solution(
             correctness_feedback = "Expected answer missing; correctness could not be fully verified."
             correctness_evidence_missing.append("Expected answer not provided for verification.")
             correctness_decision_reason = "Correctness is partially assessed without expected answer."
-        elif _normalize(extracted_final) != _normalize(expected_answer):
-            correctness = 1
-            correctness_errors.append("incomplete_final_answer")
-            correctness_feedback = "Final answer is not correct even though work may contain useful steps."
-            correctness_evidence_missing.append(f"Expected answer mismatch against: {expected_answer}")
-            correctness_decision_reason = "Extracted final answer does not match expected answer."
         else:
-            correctness_evidence_found.append(f"Matches expected answer: {expected_answer}")
+            exact_match = _normalize(extracted_final) == _normalize(expected_answer)
+            symbolic_validation = validate_final_answer(extracted_final, expected_answer)
+            if exact_match or symbolic_validation["status"] == "equivalent":
+                correctness_evidence_found.append(f"Matches expected answer: {expected_answer}")
+                if not exact_match:
+                    correctness_evidence_found.append("Symbolic equivalence validated by SymPy helper.")
+                    correctness_decision_reason = (
+                        "Final answer accepted by symbolic equivalence while rubric remains source of truth."
+                    )
+            else:
+                correctness = 1
+                correctness_errors.append("incomplete_final_answer")
+                correctness_feedback = "Final answer is not correct even though work may contain useful steps."
+                correctness_evidence_missing.append(f"Expected answer mismatch against: {expected_answer}")
+                correctness_decision_reason = "Extracted final answer does not match expected answer."
+                if symbolic_validation["status"] == "parse_error":
+                    correctness_evidence_missing.append("Symbolic validation parse error reduced certainty.")
     correctness_verifiable = expected_answer is not None and bool(extracted_final)
 
     if conceptual_misunderstanding:
@@ -253,6 +265,13 @@ def mark_solution(
         expected_answer_available=expected_answer is not None,
         correctness_verifiable=correctness_verifiable,
     )
+    if symbolic_validation and symbolic_validation["status"] == "parse_error":
+        confidence_result["confidence"] = "low"
+        confidence_result["teacher_review_needed"] = True
+        reasons = confidence_result.get("reasons", [])
+        if "symbolic_parse_error" not in reasons:
+            reasons.append("symbolic_parse_error")
+        confidence_result["reasons"] = reasons
 
     feedback_summary = (
         f"Scored {total_score}/{max_score}. "
@@ -281,5 +300,6 @@ def mark_solution(
         rewrite_guidance=rewrite_guidance,
         confidence=confidence_result["confidence"],
         teacher_review_needed=bool(confidence_result["teacher_review_needed"]),
+        symbolic_validation=symbolic_validation,
     )
     return result.to_dict()

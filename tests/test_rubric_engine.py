@@ -207,3 +207,37 @@ def test_output_is_json_serializable():
     result = mark_solution(data, expected_answer="x=4")
     encoded = json.dumps(result)
     assert isinstance(encoded, str)
+
+
+def test_rubric_output_includes_symbolic_validation_when_expected_answer_provided():
+    data = {
+        "solution_text": "I simplify and solve because both expressions match. final answer: x^2 - 1",
+        "student_id": "s14",
+        "question_id": "q14",
+        "topic": "algebra",
+        "subskill": "factorization",
+        "confirmed_by_student": True,
+        "input_source": "typed",
+    }
+    result = mark_solution(data, expected_answer="(x - 1)(x + 1)")
+    assert "symbolic_validation" in result
+    assert result["symbolic_validation"] is not None
+    assert result["symbolic_validation"]["status"] == "equivalent"
+
+
+def test_symbolic_validation_does_not_override_missing_reasoning_lost_marks():
+    data = {
+        "solution_text": "equation simplify isolate. final answer: x^2 - 1",
+        "student_id": "s15",
+        "question_id": "q15",
+        "topic": "algebra",
+        "subskill": "factorization",
+        "confirmed_by_student": True,
+        "input_source": "typed",
+    }
+    result = mark_solution(data, expected_answer="(x - 1)(x + 1)")
+    assert result["symbolic_validation"]["status"] == "equivalent"
+    assert "missing_reasoning" in result["error_types"]
+    reasoning = next((c for c in result["criterion_results"] if c["criterion"] == "reasoning"), None)
+    assert reasoning is not None
+    assert reasoning["lost_marks"] > 0

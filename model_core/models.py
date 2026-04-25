@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass, field
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 MIN_SOLUTION_LENGTH = 20
 ALLOWED_INPUT_SOURCES = ["typed", "manual_edit", "ocr_draft"]
@@ -67,6 +67,7 @@ class MarkingResult:
     rewrite_guidance: str
     confidence: str
     teacher_review_needed: bool
+    symbolic_validation: Optional[Dict[str, object]] = None
 
     def to_dict(self) -> Dict:
         data = asdict(self)
