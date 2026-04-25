@@ -269,8 +269,7 @@ def mark_solution(
         confidence_result["confidence"] = "low"
         confidence_result["teacher_review_needed"] = True
         reasons = confidence_result.get("reasons", [])
-        if "symbolic_parse_error" not in reasons:
-            reasons.append("symbolic_parse_error")
+        reasons.append("symbolic_parse_error")
         confidence_result["reasons"] = reasons
 
     feedback_summary = (

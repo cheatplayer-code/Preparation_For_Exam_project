@@ -1,2 +1,2 @@
-sympy
-pytest
+sympy==1.14.0
+pytest==9.0.3

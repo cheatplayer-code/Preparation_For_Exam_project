@@ -1,6 +1,7 @@
 from typing import Dict
 
 from sympy import simplify
+from sympy.core.sympify import SympifyError
 from sympy.parsing.sympy_parser import (
     convert_xor,
     implicit_multiplication_application,
@@ -48,7 +49,7 @@ def validate_final_answer(student_answer: str, expected_answer: str) -> Dict[str
             transformations=_TRANSFORMATIONS,
             evaluate=True,
         )
-    except Exception:
+    except (SympifyError, SyntaxError, TypeError, ValueError):
         result.update(
             {
                 "status": "parse_error",
@@ -66,7 +67,7 @@ def validate_final_answer(student_answer: str, expected_answer: str) -> Dict[str
 
     try:
         equivalent = bool(simplify(student_expr - expected_expr) == 0)
-    except Exception:
+    except (TypeError, ValueError, NotImplementedError):
         equivalent = normalized_student == normalized_expected
 
     if equivalent:
