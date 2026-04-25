@@ -46,12 +46,6 @@ def assess_confidence(
 
     return {
         "confidence": confidence,
-        "teacher_review_needed": (
-            confidence == "low"
-            or "solution_unconfirmed" in reasons
-            or "too_short" in reasons
-            or "unclear_working" in reasons
-            or "correctness_unverified" in reasons
-        ),
+        "teacher_review_needed": is_low,
         "reasons": reasons,
     }

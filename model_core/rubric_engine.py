@@ -104,22 +104,25 @@ def mark_solution(
         correctness_feedback = "Final answer is missing or not clearly stated."
         correctness_evidence_missing.append("No clearly extractable final answer statement.")
         correctness_decision_reason = "Final-answer marker or usable last line was not found."
+        if expected_answer is None:
+            correctness_feedback = "Final answer missing and expected answer unavailable; correctness cannot be verified."
+            correctness_evidence_missing.append("Expected answer not provided for verification.")
+            correctness_decision_reason = "Missing final answer plus missing expected answer blocks correctness verification."
     else:
         correctness_evidence_found.append(f"Extracted final answer: {extracted_final}")
-
-    if expected_answer is None:
-        correctness = min(correctness, 2)
-        correctness_feedback = "Expected answer missing; correctness could not be fully verified."
-        correctness_evidence_missing.append("Expected answer not provided for verification.")
-        correctness_decision_reason = "Correctness is partially assessed without expected answer."
-    elif _normalize(extracted_final) != _normalize(expected_answer):
-        correctness = 1
-        correctness_errors.append("incomplete_final_answer")
-        correctness_feedback = "Final answer is not correct even though work may contain useful steps."
-        correctness_evidence_missing.append(f"Expected answer mismatch against: {expected_answer}")
-        correctness_decision_reason = "Extracted final answer does not match expected answer."
-    else:
-        correctness_evidence_found.append(f"Matches expected answer: {expected_answer}")
+        if expected_answer is None:
+            correctness = min(correctness, 2)
+            correctness_feedback = "Expected answer missing; correctness could not be fully verified."
+            correctness_evidence_missing.append("Expected answer not provided for verification.")
+            correctness_decision_reason = "Correctness is partially assessed without expected answer."
+        elif _normalize(extracted_final) != _normalize(expected_answer):
+            correctness = 1
+            correctness_errors.append("incomplete_final_answer")
+            correctness_feedback = "Final answer is not correct even though work may contain useful steps."
+            correctness_evidence_missing.append(f"Expected answer mismatch against: {expected_answer}")
+            correctness_decision_reason = "Extracted final answer does not match expected answer."
+        else:
+            correctness_evidence_found.append(f"Matches expected answer: {expected_answer}")
     correctness_verifiable = expected_answer is not None and bool(extracted_final)
 
     if conceptual_misunderstanding:
@@ -237,7 +240,9 @@ def mark_solution(
     all_errors_raw = {e for c in criterion_results for e in c.error_types}
     unknown_error_types = sorted(e for e in all_errors_raw if e not in ERROR_DNA_CATEGORIES)
     if unknown_error_types:
-        raise ValueError(f"Unsupported error types generated: {', '.join(unknown_error_types)}")
+        raise RuntimeError(
+            f"Unsupported error types generated in criterion assessment: {', '.join(unknown_error_types)}"
+        )
     all_errors = sorted(all_errors_raw)
     evidence_strength = total_score / max_score if max_score else 0.0
     confidence_result = assess_confidence(

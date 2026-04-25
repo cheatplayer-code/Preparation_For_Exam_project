@@ -142,7 +142,7 @@ def test_all_error_types_are_from_allowed_taxonomy():
         assert set(criterion["error_types"]).issubset(allowed)
 
 
-def test_missing_expected_answer_triggers_teacher_review_or_low_confidence():
+def test_missing_expected_answer_triggers_teacher_review():
     data = {
         "solution_text": "I form the equation, simplify each side, and isolate x. therefore x = 4",
         "student_id": "s10",
@@ -153,7 +153,7 @@ def test_missing_expected_answer_triggers_teacher_review_or_low_confidence():
         "input_source": "typed",
     }
     result = mark_solution(data, expected_answer=None)
-    assert result["teacher_review_needed"] is True or result["confidence"] == "low"
+    assert result["teacher_review_needed"] is True
 
 
 def test_criterion_trace_fields_are_present():
@@ -189,6 +189,7 @@ def test_percentage_and_examiner_style_marks_fields():
     result = mark_solution(data, expected_answer="x=4")
     assert result["awarded_marks"] == result["total_score"]
     assert result["total_marks"] == result["max_score"]
+    assert result["total_marks"] > 0
     expected_percentage = round((result["awarded_marks"] / result["total_marks"]) * 100, 2)
     assert result["percentage"] == expected_percentage
 
