@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Iterable, List, Union
+from typing import Dict, Iterable, List, Optional, Union
 
 from .confidence import assess_confidence
 from .models import CriterionResult, MarkingResult, StudentSolutionInput
@@ -32,7 +32,7 @@ def _has_any(text: str, tokens: Iterable[str]) -> bool:
 
 def mark_solution(
     solution_input: Union[StudentSolutionInput, Dict[str, object]],
-    expected_answer: str | None = None,
+    expected_answer: Optional[str] = None,
 ) -> Dict[str, object]:
     if isinstance(solution_input, dict):
         solution_input = StudentSolutionInput(**solution_input)

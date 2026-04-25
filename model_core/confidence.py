@@ -1,11 +1,11 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 
 def assess_confidence(
     solution_text: str,
     confirmed_by_student: bool,
     evidence_strength: float,
-    error_types: List[str] | None = None,
+    error_types: Optional[List[str]] = None,
 ) -> Dict[str, object]:
     text = (solution_text or "").strip()
     lowered = text.lower()
