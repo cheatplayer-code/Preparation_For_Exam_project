@@ -1,0 +1,18 @@
+# RUBRIC_MODEL
+
+Deterministic rubric criteria:
+- correctness (0-4)
+- method (0-3)
+- reasoning (0-2)
+- clarity (0-1)
+
+Output includes:
+- criterion-level scores
+- lost marks
+- error types
+- feedback summary
+- rewrite guidance
+- confidence
+- teacher_review_needed
+
+No OCR and no LLM are used.
