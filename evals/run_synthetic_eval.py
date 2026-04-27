@@ -76,7 +76,7 @@ def run_synthetic_eval() -> Dict[str, Any]:
         if not passed:
             failures.append(case_result)
 
-        total_awarded_marks += int(actual["awarded_marks"])
+        total_awarded_marks += float(actual["awarded_marks"])
         if actual["teacher_review_needed"]:
             teacher_review_count += 1
         if actual["confidence"] in confidence_distribution:
@@ -120,4 +120,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
