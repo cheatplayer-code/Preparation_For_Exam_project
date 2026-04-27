@@ -22,3 +22,9 @@ from model_core.rubric_engine import mark_solution
 from model_core.error_dna import update_error_dna
 from model_core.study_plan import generate_7_day_plan
 ```
+
+## Running synthetic evaluation
+```bash
+python3 -m evals.run_synthetic_eval
+python3 -m evals.run_synthetic_eval --json-only
+```
