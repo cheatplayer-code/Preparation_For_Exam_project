@@ -55,6 +55,6 @@ def test_same_equation_returns_equivalent():
     assert result["status"] == "equivalent"
 
 
-def test_equation_solution_set_equivalence_not_supported_yet():
+def test_equation_different_forms_not_equivalent_with_current_logic():
     result = validate_final_answer("2*x=8", "x=4")
     assert result["status"] != "equivalent"

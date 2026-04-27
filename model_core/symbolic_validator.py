@@ -13,6 +13,7 @@ from sympy.parsing.sympy_parser import (
 _TRANSFORMATIONS = standard_transformations + (implicit_multiplication_application, convert_xor)
 MAX_SYMBOLIC_INPUT_LENGTH = 300
 SAFE_SYMBOLIC_PATTERN = r"^[0-9a-zA-Z_+\-*/^().=,\s]+$"
+_SAFE_SYMBOLIC_RE = re.compile(SAFE_SYMBOLIC_PATTERN)
 
 
 def _to_comparable_expression(raw: str) -> str:
@@ -68,8 +69,7 @@ def validate_final_answer(student_answer: str, expected_answer: str) -> Dict[str
         )
         return result
 
-    safe_pattern = re.compile(SAFE_SYMBOLIC_PATTERN)
-    if not safe_pattern.fullmatch(student_expression) or not safe_pattern.fullmatch(expected_expression):
+    if not _SAFE_SYMBOLIC_RE.fullmatch(student_expression) or not _SAFE_SYMBOLIC_RE.fullmatch(expected_expression):
         result.update(
             {
                 "status": "parse_error",
