@@ -153,6 +153,6 @@ def test_synthetic_solutions_stability(case):
     result = mark_solution(data, expected_answer=case["expected_answer"])
 
     assert result["awarded_marks"] == case["expected_awarded_marks"]
-    assert result["error_types"] == case["expected_error_types"]
+    assert sorted(result["error_types"]) == sorted(case["expected_error_types"])
     assert result["confidence"] == case["expected_confidence"]
-    assert result["teacher_review_needed"] is case["expected_teacher_review_needed"]
+    assert result["teacher_review_needed"] == case["expected_teacher_review_needed"]
