@@ -51,7 +51,7 @@ def _collect_mismatches(expected: Dict[str, Any], actual: Dict[str, Any]) -> Lis
     return mismatches
 
 
-def classify_failure_categories(mismatches: List[Dict[str, Any]]) -> List[str]:
+def extract_failure_categories_from_mismatches(mismatches: List[Dict[str, Any]]) -> List[str]:
     category_by_field = {
         "awarded_marks": "marks_regression",
         "error_types": "error_taxonomy_regression",
@@ -115,7 +115,7 @@ def save_markdown_report(report: Dict[str, Any], path: str) -> None:
     output_path.write_text(build_markdown_report(report) + "\n", encoding="utf-8")
 
 
-def _summary_line(report: Dict[str, Any]) -> str:
+def build_summary_line(report: Dict[str, Any]) -> str:
     return (
         "Synthetic evaluation: "
         f"{report['passed_cases']}/{report['total_cases']} passed "
@@ -154,7 +154,7 @@ def run_synthetic_eval() -> Dict[str, Any]:
         case_results.append(case_result)
 
         if not passed:
-            case_result["failure_categories"] = classify_failure_categories(mismatches)
+            case_result["failure_categories"] = extract_failure_categories_from_mismatches(mismatches)
             for category in case_result["failure_categories"]:
                 failure_category_counts[category] += 1
             failures.append(case_result)
@@ -198,7 +198,7 @@ def main() -> None:
     args = parser.parse_args()
 
     report = run_synthetic_eval()
-    summary = _summary_line(report)
+    summary = build_summary_line(report)
 
     if args.output:
         save_json_report(report, args.output)

@@ -28,7 +28,8 @@ def test_v06_failure_category_counts_zero_when_all_cases_pass(monkeypatch):
         }
     ]
 
-    def fake_mark_solution(_payload, expected_answer=None):
+    def mock_mark_solution(payload, expected_answer=None):
+        _ = payload, expected_answer
         return {
             "awarded_marks": 10,
             "error_types": [],
@@ -37,7 +38,7 @@ def test_v06_failure_category_counts_zero_when_all_cases_pass(monkeypatch):
         }
 
     monkeypatch.setattr(eval_runner, "SYNTHETIC_SOLUTIONS", cases)
-    monkeypatch.setattr(eval_runner, "mark_solution", fake_mark_solution)
+    monkeypatch.setattr(eval_runner, "mark_solution", mock_mark_solution)
 
     report = eval_runner.run_synthetic_eval()
     assert report["failed_cases"] == 0
