@@ -28,3 +28,13 @@ from model_core.study_plan import generate_7_day_plan
 python3 -m evals.run_synthetic_eval
 python3 -m evals.run_synthetic_eval --json-only
 ```
+
+## v0.6 evaluation report options
+```bash
+python3 -m evals.run_synthetic_eval
+python3 -m evals.run_synthetic_eval --json-only
+python3 -m evals.run_synthetic_eval --summary-only
+python3 -m evals.run_synthetic_eval --output eval_reports/latest_synthetic_eval.json
+python3 -m evals.run_synthetic_eval --markdown-output eval_reports/latest_synthetic_eval.md
+python3 -m evals.run_synthetic_eval --fail-on-regression
+```

@@ -1,5 +1,6 @@
 import argparse
 import json
+from pathlib import Path
 from typing import Any, Dict, List
 
 from evals.synthetic_v04_cases import SYNTHETIC_SOLUTIONS
@@ -50,10 +51,89 @@ def _collect_mismatches(expected: Dict[str, Any], actual: Dict[str, Any]) -> Lis
     return mismatches
 
 
+def classify_failure_categories(mismatches: List[Dict[str, Any]]) -> List[str]:
+    category_by_field = {
+        "awarded_marks": "marks_regression",
+        "error_types": "error_taxonomy_regression",
+        "confidence": "confidence_regression",
+        "teacher_review_needed": "review_flag_regression",
+    }
+    categories = []
+    for mismatch in mismatches:
+        category = category_by_field.get(mismatch["field"])
+        if category and category not in categories:
+            categories.append(category)
+    return categories
+
+
+def build_markdown_report(report: Dict[str, Any]) -> str:
+    lines = [
+        "# Synthetic Evaluation Report",
+        "",
+        f"- total cases: {report['total_cases']}",
+        f"- passed cases: {report['passed_cases']}",
+        f"- failed cases: {report['failed_cases']}",
+        f"- pass rate: {report['pass_rate']:.1%}",
+        f"- average awarded marks: {report['average_awarded_marks']:.2f}",
+        f"- teacher review rate: {report['teacher_review_rate']:.1%}",
+        "- confidence distribution:",
+        f"  - high: {report['confidence_distribution']['high']}",
+        f"  - medium: {report['confidence_distribution']['medium']}",
+        f"  - low: {report['confidence_distribution']['low']}",
+        "",
+    ]
+
+    failures = report.get("failures", [])
+    if failures:
+        lines.extend(
+            [
+                "## Failures",
+                "",
+                "| case_id | categories | mismatch_fields |",
+                "| --- | --- | --- |",
+            ]
+        )
+        for failure in failures:
+            categories = ", ".join(failure.get("failure_categories", []))
+            mismatch_fields = ", ".join(mismatch["field"] for mismatch in failure.get("mismatches", []))
+            lines.append(f"| {failure['case_id']} | {categories} | {mismatch_fields} |")
+        lines.append("")
+
+    lines.append("This eval checks deterministic stability, not real exam validity.")
+    return "\n".join(lines)
+
+
+def save_json_report(report: Dict[str, Any], path: str) -> None:
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def save_markdown_report(report: Dict[str, Any], path: str) -> None:
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(build_markdown_report(report) + "\n", encoding="utf-8")
+
+
+def _summary_line(report: Dict[str, Any]) -> str:
+    return (
+        "Synthetic evaluation: "
+        f"{report['passed_cases']}/{report['total_cases']} passed "
+        f"({report['pass_rate']:.1%}), avg_marks={report['average_awarded_marks']:.2f}, "
+        f"teacher_review_rate={report['teacher_review_rate']:.1%}"
+    )
+
+
 def run_synthetic_eval() -> Dict[str, Any]:
     case_results = []
     failures = []
     confidence_distribution = {"high": 0, "medium": 0, "low": 0}
+    failure_category_counts = {
+        "marks_regression": 0,
+        "error_taxonomy_regression": 0,
+        "confidence_regression": 0,
+        "review_flag_regression": 0,
+    }
     total_awarded_marks = 0
     teacher_review_count = 0
 
@@ -74,6 +154,9 @@ def run_synthetic_eval() -> Dict[str, Any]:
         case_results.append(case_result)
 
         if not passed:
+            case_result["failure_categories"] = classify_failure_categories(mismatches)
+            for category in case_result["failure_categories"]:
+                failure_category_counts[category] += 1
             failures.append(case_result)
 
         total_awarded_marks += float(actual["awarded_marks"])
@@ -94,6 +177,7 @@ def run_synthetic_eval() -> Dict[str, Any]:
         "average_awarded_marks": total_awarded_marks / total_cases if total_cases else 0.0,
         "teacher_review_rate": teacher_review_count / total_cases if total_cases else 0.0,
         "confidence_distribution": confidence_distribution,
+        "failure_category_counts": failure_category_counts,
         "failures": failures,
         "case_results": case_results,
     }
@@ -103,19 +187,34 @@ def run_synthetic_eval() -> Dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run synthetic stability evaluation for model-core.")
     parser.add_argument("--json-only", action="store_true", help="Print only the JSON report.")
+    parser.add_argument("--summary-only", action="store_true", help="Print only the summary line.")
+    parser.add_argument("--output", type=str, help="Write the full JSON report to the provided path.")
+    parser.add_argument("--markdown-output", type=str, help="Write a markdown summary report to the provided path.")
+    parser.add_argument(
+        "--fail-on-regression",
+        action="store_true",
+        help="Exit with status code 1 when any synthetic case fails.",
+    )
     args = parser.parse_args()
 
     report = run_synthetic_eval()
+    summary = _summary_line(report)
 
-    if not args.json_only:
-        print(
-            "Synthetic evaluation: "
-            f"{report['passed_cases']}/{report['total_cases']} passed "
-            f"({report['pass_rate']:.1%}), avg_marks={report['average_awarded_marks']:.2f}, "
-            f"teacher_review_rate={report['teacher_review_rate']:.1%}"
-        )
+    if args.output:
+        save_json_report(report, args.output)
+    if args.markdown_output:
+        save_markdown_report(report, args.markdown_output)
 
-    print(json.dumps(report, indent=2, sort_keys=True))
+    if args.summary_only:
+        print(summary)
+    elif args.json_only:
+        print(json.dumps(report, indent=2, sort_keys=True))
+    else:
+        print(summary)
+        print(json.dumps(report, indent=2, sort_keys=True))
+
+    if args.fail_on_regression:
+        raise SystemExit(1 if report["failed_cases"] > 0 else 0)
 
 
 if __name__ == "__main__":
