@@ -20,6 +20,7 @@ def _to_comparable_expression(raw: str) -> str:
     expr = (raw or "").strip()
     if "=" in expr:
         # Current behavior compares equations by expression form, not by solution-set equivalence.
+        # Example: 2*x=8 and x=4 are not guaranteed equivalent under current logic.
         # TODO: add solve-based equation comparison in a future version.
         left, right = expr.split("=", 1)
         return f"({left.strip()})-({right.strip()})"

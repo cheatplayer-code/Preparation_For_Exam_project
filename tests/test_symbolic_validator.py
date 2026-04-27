@@ -57,4 +57,4 @@ def test_same_equation_returns_equivalent():
 
 def test_equation_different_forms_not_equivalent_with_current_logic():
     result = validate_final_answer("2*x=8", "x=4")
-    assert result["status"] != "equivalent"
+    assert result["status"] == "not_equivalent"
