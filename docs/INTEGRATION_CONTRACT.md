@@ -60,6 +60,13 @@ JSON-serializable dictionary with:
 - The rubric engine remains the source of truth for grading decisions.
 - SymPy output does not grade reasoning, method quality, notation quality, or missing steps.
 
+### Symbolic validation hardening note (v0.3.1)
+- Symbolic validation now performs safe input checks before SymPy parsing.
+- Empty, unsafe, or too-long expressions return `parse_error` and recommend teacher review.
+- Equation support is limited to expression-form comparison.
+- Full solve-based equation equivalence is planned for a future version.
+- Rubric engine remains the authoritative grading layer.
+
 ## Input contract for `update_error_dna`
 - student_id: str
 - marking_result: dict from `mark_solution`

@@ -1,4 +1,5 @@
 from typing import Dict
+import re
 
 from sympy import simplify
 from sympy.core.sympify import SympifyError
@@ -10,11 +11,17 @@ from sympy.parsing.sympy_parser import (
 )
 
 _TRANSFORMATIONS = standard_transformations + (implicit_multiplication_application, convert_xor)
+MAX_SYMBOLIC_INPUT_LENGTH = 300
+SAFE_SYMBOLIC_PATTERN = r"^[0-9a-zA-Z_+\-*/^().=,\s]+$"
+_SAFE_SYMBOLIC_RE = re.compile(SAFE_SYMBOLIC_PATTERN)
 
 
 def _to_comparable_expression(raw: str) -> str:
     expr = (raw or "").strip()
     if "=" in expr:
+        # Current behavior compares equations by expression form, not by solution-set equivalence.
+        # Example: 2*x=8 and x=4 are not guaranteed equivalent under current logic.
+        # TODO: add solve-based equation comparison in a future version.
         left, right = expr.split("=", 1)
         return f"({left.strip()})-({right.strip()})"
     return expr
@@ -36,6 +43,42 @@ def validate_final_answer(student_answer: str, expected_answer: str) -> Dict[str
     }
 
     if not expected_expression:
+        return result
+
+    if not student_expression:
+        result.update(
+            {
+                "status": "parse_error",
+                "confidence_impact": "decrease",
+                "teacher_review_recommended": True,
+                "reason": "Student answer is missing.",
+            }
+        )
+        return result
+
+    if (
+        len(student_expression) > MAX_SYMBOLIC_INPUT_LENGTH
+        or len(expected_expression) > MAX_SYMBOLIC_INPUT_LENGTH
+    ):
+        result.update(
+            {
+                "status": "parse_error",
+                "confidence_impact": "decrease",
+                "teacher_review_recommended": True,
+                "reason": f"Expression exceeds maximum length limit of {MAX_SYMBOLIC_INPUT_LENGTH} characters.",
+            }
+        )
+        return result
+
+    if not _SAFE_SYMBOLIC_RE.fullmatch(student_expression) or not _SAFE_SYMBOLIC_RE.fullmatch(expected_expression):
+        result.update(
+            {
+                "status": "parse_error",
+                "confidence_impact": "decrease",
+                "teacher_review_recommended": True,
+                "reason": "Expression contains unsafe characters.",
+            }
+        )
         return result
 
     try:

@@ -22,3 +22,10 @@ No OCR and no LLM are used.
 - SymPy validates final-answer equivalence only.
 - It does not grade reasoning quality, method steps, notation quality, or exam-style explanation.
 - Rubric scoring remains the authoritative grading engine.
+
+## v0.3.1 symbolic validation hardening
+- Symbolic validation performs safe input checks before SymPy parsing.
+- Empty, unsafe, or too-long expressions return `parse_error` and recommend teacher review.
+- Equation support is limited to expression-form comparison and is not full solution-set equivalence checking.
+- Full solve-based equation equivalence is planned for a future version.
+- Rubric engine remains the authoritative grading layer.
