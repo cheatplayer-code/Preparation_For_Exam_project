@@ -11,8 +11,8 @@ def test_run_synthetic_eval_returns_report_dict():
 def test_v05_report_summary_metrics_stable():
     report = run_synthetic_eval()
 
-    assert report["total_cases"] == 12
-    assert report["passed_cases"] == 12
+    assert report["total_cases"] == 25
+    assert report["passed_cases"] == 25
     assert report["pass_rate"] == 1.0
 
 

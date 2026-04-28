@@ -38,3 +38,18 @@ python3 -m evals.run_synthetic_eval --output eval_reports/latest_synthetic_eval.
 python3 -m evals.run_synthetic_eval --markdown-output eval_reports/latest_synthetic_eval.md
 python3 -m evals.run_synthetic_eval --fail-on-regression
 ```
+
+## v0.7 synthetic stability dataset
+
+The synthetic stability dataset now contains **25 cases** (up from 12 in v0.6).
+
+The new cases cover: correct answer without visible method, correct answer without
+reasoning or method, correct method without a final answer, symbolic parse errors,
+unsafe symbolic input, the equation-equivalence limitation (`2*x=8` vs `x=4`),
+notation issues, misread-question patterns, language misinterpretation, time management,
+multi-error submissions, OCR-draft unconfirmed solutions, and clean manual-edit confirmed
+solutions.
+
+v0.7 expands the synthetic stability dataset to cover more edge cases. Some categories
+are represented as future-facing cases when the current deterministic rubric does not yet
+detect them explicitly.

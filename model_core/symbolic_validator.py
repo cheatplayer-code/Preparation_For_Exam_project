@@ -1,3 +1,4 @@
+from tokenize import TokenError
 from typing import Dict
 import re
 
@@ -92,7 +93,7 @@ def validate_final_answer(student_answer: str, expected_answer: str) -> Dict[str
             transformations=_TRANSFORMATIONS,
             evaluate=True,
         )
-    except (SympifyError, SyntaxError, TypeError, ValueError):
+    except (SympifyError, SyntaxError, TypeError, ValueError, TokenError):
         result.update(
             {
                 "status": "parse_error",
