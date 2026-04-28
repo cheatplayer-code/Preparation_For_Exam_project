@@ -53,3 +53,18 @@ solutions.
 v0.7 expands the synthetic stability dataset to cover more edge cases. Some categories
 are represented as future-facing cases when the current deterministic rubric does not yet
 detect them explicitly.
+
+## v0.8 Error DNA evaluation
+
+v0.8 adds multi-attempt Error DNA aggregation evaluation. The eval runner simulates five
+synthetic student histories (repeated attempts), accumulates Error DNA profiles across
+attempts, and verifies that the resulting weakness profiles and 7-day study plans contain
+the expected focus categories.
+
+```bash
+python3 -m evals.run_error_dna_eval
+python3 -m evals.run_error_dna_eval --json-only
+python3 -m evals.run_error_dna_eval --summary-only
+python3 -m evals.run_error_dna_eval --output eval_reports/latest_error_dna_eval.json
+python3 -m evals.run_error_dna_eval --fail-on-regression
+```
