@@ -135,7 +135,7 @@ SYNTHETIC_SOLUTIONS = [
     {
         # Correct final answer but no visible method (no method-token words).
         # TODO: future rubric version should reward partial credit for "correct answer without method"
-        # as a distinct pattern rather than only penalising method_gap.
+        # as a distinct pattern rather than only penalizing method_gap.
         "case_id": "synthetic_13_correct_answer_no_method",
         "solution_text": "I recall the answer because it matches what I studied. final answer: x = 4",
         "expected_answer": "x=4",
