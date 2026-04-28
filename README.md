@@ -68,3 +68,16 @@ python3 -m evals.run_error_dna_eval --summary-only
 python3 -m evals.run_error_dna_eval --output eval_reports/latest_error_dna_eval.json
 python3 -m evals.run_error_dna_eval --fail-on-regression
 ```
+
+## v0.9 combined evaluation runner
+
+v0.9 adds a combined runner that executes both the synthetic stability eval and the Error DNA
+eval in a single command and returns a unified report with `overall_passed` and `total_failures`.
+
+```bash
+python3 -m evals.run_all_evals
+python3 -m evals.run_all_evals --json-only
+python3 -m evals.run_all_evals --summary-only
+python3 -m evals.run_all_evals --output eval_reports/latest_all_evals.json
+python3 -m evals.run_all_evals --fail-on-regression
+```
