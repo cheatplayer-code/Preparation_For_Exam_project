@@ -1,3 +1,5 @@
+<a href="https://github.com/cheatplayer-code/Preparation_For_Exam_project/actions/workflows/model-core-ci.yml"><img src="https://github.com/cheatplayer-code/Preparation_For_Exam_project/actions/workflows/model-core-ci.yml/badge.svg"></a>
+
 # Preparation_For_Exam_project
 
 This repository currently contains the **model-core package only** for MESC Lab.

@@ -1,0 +1,36 @@
+name: Model Core CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  model-core:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Run tests
+        run: python -m pytest -q
+      - name: Run combined evals
+        run: |
+          python -m evals.run_all_evals --summary-only
+          python -m evals.run_all_evals --fail-on-regression
+      - name: Run student demo smoke test
+        run: python -m demo.run_student_demo --summary-only
+      - name: Run console scripts smoke test
+        run: |
+          mesc-all-evals --summary-only
+          mesc-student-demo --summary-only
