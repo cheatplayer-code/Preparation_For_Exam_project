@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mesc-lab-model-core"
+version = "1.2.0"
+description = "Deterministic model-core for rubric marking, Error DNA, study plans, and synthetic evaluation."
+requires-python = ">=3.10"
+dependencies = [
+  "sympy==1.14.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest==9.0.3",
+]
+
+[project.scripts]
+mesc-synthetic-eval = "evals.run_synthetic_eval:main"
+mesc-error-dna-eval = "evals.run_error_dna_eval:main"
+mesc-all-evals = "evals.run_all_evals:main"
+mesc-student-demo = "demo.run_student_demo:main"
+
+[tool.setuptools]
+packages = ["model_core", "evals", "demo"]

@@ -1,7 +1,7 @@
 # VERSION
 
-Current version: v1.0.0
-Version status: stable model-core freeze
+Current version: v1.2.0
+Version status: package handoff cleanup
 
 Scope:
 - rubric marking
@@ -29,3 +29,8 @@ from model_core.error_dna import update_error_dna
 from model_core.study_plan import generate_7_day_plan
 from model_core.symbolic_validator import validate_final_answer
 ```
+
+v1.2 notes:
+- package installability via pyproject.toml
+- console scripts for evals and student demo
+- public API remains stable

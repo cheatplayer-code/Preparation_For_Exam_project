@@ -1,5 +1,11 @@
 # CHANGELOG
 
+- v1.2 package handoff cleanup
+  - added pyproject.toml
+  - added package metadata
+  - added console scripts
+  - preserved model-core public API
+  - no scoring logic changes
 - v0.1 scaffold
 - v0.2 validation + traceability
 - v0.3 SymPy symbolic helper

@@ -26,6 +26,26 @@ python3 -m demo.run_student_demo --json-only
 python3 -m demo.run_student_demo --output demo_reports/latest_student_demo.json
 ```
 
+## v1.2 Package handoff
+- Install:
+```bash
+pip install -e .
+```
+- For dev/test:
+```bash
+pip install -e ".[dev]"
+```
+- Usage:
+```bash
+python3 -m evals.run_all_evals --summary-only
+python3 -m demo.run_student_demo --summary-only
+```
+- Console scripts:
+```bash
+mesc-all-evals --summary-only
+mesc-student-demo --summary-only
+```
+
 ## Scope
 - Student solution input handling
 - Deterministic rubric-based marking
