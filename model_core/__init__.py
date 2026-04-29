@@ -4,6 +4,6 @@ from .rubric_engine import mark_solution
 from .error_dna import update_error_dna
 from .study_plan import generate_7_day_plan
 
-__version__ = "1.0.0"
+__version__ = "1.2.0"
 
 __all__ = ["mark_solution", "update_error_dna", "generate_7_day_plan", "__version__"]
