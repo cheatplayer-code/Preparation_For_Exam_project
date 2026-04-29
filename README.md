@@ -2,6 +2,22 @@
 
 This repository currently contains the **model-core package only** for MESC Lab.
 
+## v1.0 Stable Model-Core Freeze
+- Stable, integration-ready model-core behavior for rubric marking, symbolic final-answer validation helper, confidence + teacher review logic, Error DNA aggregation, 7-day study plan generation, and synthetic evaluation runners.
+- Public import functions:
+```python
+from model_core.rubric_engine import mark_solution
+from model_core.error_dna import update_error_dna
+from model_core.study_plan import generate_7_day_plan
+from model_core.symbolic_validator import validate_final_answer
+```
+- Run all evals:
+```bash
+python3 -m evals.run_all_evals --summary-only
+python3 -m evals.run_all_evals --fail-on-regression
+```
+- Documentation: VERSION.md, CHANGELOG.md, docs/BACKEND_INTEGRATION_GUIDE.md, docs/MODEL_CORE_QUALITY_REPORT.md
+
 ## Scope
 - Student solution input handling
 - Deterministic rubric-based marking
@@ -21,6 +37,7 @@ This repository currently contains the **model-core package only** for MESC Lab.
 from model_core.rubric_engine import mark_solution
 from model_core.error_dna import update_error_dna
 from model_core.study_plan import generate_7_day_plan
+from model_core.symbolic_validator import validate_final_answer
 ```
 
 ## Running synthetic evaluation
