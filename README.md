@@ -18,6 +18,14 @@ python3 -m evals.run_all_evals --fail-on-regression
 ```
 - Documentation: VERSION.md, CHANGELOG.md, docs/BACKEND_INTEGRATION_GUIDE.md, docs/MODEL_CORE_QUALITY_REPORT.md
 
+## v1.1 Student demo runner
+```bash
+python3 -m demo.run_student_demo
+python3 -m demo.run_student_demo --summary-only
+python3 -m demo.run_student_demo --json-only
+python3 -m demo.run_student_demo --output demo_reports/latest_student_demo.json
+```
+
 ## Scope
 - Student solution input handling
 - Deterministic rubric-based marking
