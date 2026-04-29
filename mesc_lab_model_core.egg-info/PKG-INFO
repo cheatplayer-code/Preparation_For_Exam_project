@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: mesc-lab-model-core
+Version: 1.2.0
+Summary: Deterministic model-core for rubric marking, Error DNA, study plans, and synthetic evaluation.
+Requires-Python: >=3.10
+Requires-Dist: sympy==1.14.0
+Provides-Extra: dev
+Requires-Dist: pytest==9.0.3; extra == "dev"

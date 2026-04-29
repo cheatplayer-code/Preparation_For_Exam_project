@@ -17,4 +17,12 @@ def test_pyproject_metadata():
     repo_root = Path(__file__).resolve().parents[1]
     pyproject_path = repo_root / "pyproject.toml"
     assert pyproject_path.exists()
-    assert 'name = "mesc-lab-model-core"' in pyproject_path.read_text()
+    pyproject_lines = pyproject_path.read_text().splitlines()
+    name_lines = [
+        line for line in pyproject_lines if line.strip().startswith("name")
+    ]
+    assert any(
+        line.split("=", 1)[1].strip().strip('"') == "mesc-lab-model-core"
+        for line in name_lines
+        if "=" in line
+    )
