@@ -1,5 +1,0 @@
-[console_scripts]
-mesc-all-evals = evals.run_all_evals:main
-mesc-error-dna-eval = evals.run_error_dna_eval:main
-mesc-student-demo = demo.run_student_demo:main
-mesc-synthetic-eval = evals.run_synthetic_eval:main
