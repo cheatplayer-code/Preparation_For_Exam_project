@@ -2,4 +2,4 @@ import model_core
 
 
 def test_model_core_version():
-    assert model_core.__version__ == "1.2.0"
+    assert model_core.__version__ == "1.3.0"

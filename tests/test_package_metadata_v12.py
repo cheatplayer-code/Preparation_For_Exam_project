@@ -6,7 +6,7 @@ from model_core.symbolic_validator import validate_final_answer
 
 
 def test_package_public_imports_and_version():
-    assert model_core.__version__ == "1.2.0"
+    assert model_core.__version__ == "1.3.0"
     assert mark_solution
     assert update_error_dna
     assert generate_7_day_plan
@@ -21,8 +21,16 @@ def test_pyproject_metadata():
     name_lines = [
         line for line in pyproject_lines if line.strip().startswith("name")
     ]
+    version_lines = [
+        line for line in pyproject_lines if line.strip().startswith("version")
+    ]
     assert any(
         line.split("=", 1)[1].strip().strip('"') == "mesc-lab-model-core"
         for line in name_lines
+        if "=" in line
+    )
+    assert any(
+        line.split("=", 1)[1].strip().strip('"') == "1.3.0"
+        for line in version_lines
         if "=" in line
     )

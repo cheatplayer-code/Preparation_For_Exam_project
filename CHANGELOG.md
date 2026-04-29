@@ -1,5 +1,11 @@
 # CHANGELOG
 
+- v1.3 CI-enabled model-core
+  - added GitHub Actions CI workflow
+  - CI runs pytest
+  - CI runs combined eval with fail-on-regression
+  - CI runs student demo smoke test
+  - CI validates console scripts
 - v1.2 package handoff cleanup
   - added pyproject.toml
   - added package metadata
